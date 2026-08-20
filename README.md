@@ -2,7 +2,7 @@
 
 Aplikasi penataan gudang berbasis AI. AI (Gemini) menyusun struktur gudang & rak dari input pengguna, menempatkan barang secara otomatis berdasarkan kategori/frekuensi/kapasitas, dan bisa diajak mengubah struktur lewat obrolan bebas.
 
-Satu akun terikat ke satu **perusahaan**; semua akun dalam perusahaan yang sama berbagi data gudang dan barang yang sama.
+Satu akun terikat ke satu **perusahaan**; semua akun dalam perusahaan yang sama berbagi data gudang dan barang yang sama
 
 ## Kebutuhan
 
