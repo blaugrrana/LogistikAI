@@ -23,10 +23,6 @@ php artisan key:generate
 
 Buka **XAMPP Control Panel**, start modul **MySQL**. Buat database (nama bebas, tapi harus cocok dengan `DB_DATABASE` di `.env`):
 
-```bash
-"C:\xampp\mysql\bin\mysql.exe" -u root -e "CREATE DATABASE logistikai CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-```
-
 Buka `.env`, isi kunci Gemini:
 
 ```env
