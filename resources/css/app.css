@@ -1,0 +1,396 @@
+@import 'tailwindcss';
+/* fonts.css: dimuat via <link> di <head> (landing.blade.php), bukan @import —
+   Tailwind meng-ekspansi @import 'tailwindcss' jadi rule literal, sehingga
+   @import lain sesudahnya melanggar aturan "@import harus di urutan pertama". */
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REFRAKSI DESIGN SYSTEM — token asli, disalin langsung dari:
+   colors.css · glass.css · typography.css · motion.css · fonts.css
+   Nama variabel & kelas dipertahankan persis agar tetap sinkron dengan DS.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* — colors.css — */
+    --c-void: #F4F6FA;
+    --c-abyss: #E9EEF6;
+    --c-basalt: #DCE3EE;
+    --c-jade: #0EA083;
+    --c-cobalt: #2F5FE0;
+    --c-orchid: #7B4FD1;
+    --c-citron: #D8E85C;
+    --c-citron-ink: #1A1F05;
+    --c-frost: #10182A;
+    --c-mist: #4C5B72;
+    --c-slate: #5F6D82;
+    --c-ok: #1F9D6C;
+    --c-warn: #B5790A;
+    --c-risk: #D6355C;
+    --text-primary: var(--c-frost);
+    --text-secondary: var(--c-mist);
+    --text-tertiary: var(--c-slate);
+    --surface-void: var(--c-void);
+    --surface-content: var(--c-abyss);
+    --surface-solid: var(--c-basalt);
+    --accent-signal: var(--c-citron);
+    --accent-signal-ink: var(--c-citron-ink);
+
+    /* — glass.css — */
+    --glass-1: rgba(255, 255, 255, 0.38);
+    --glass-2: rgba(255, 255, 255, 0.52);
+    --glass-3: rgba(255, 255, 255, 0.66);
+    --glass-edge: rgba(255, 255, 255, 0.65);
+    --glass-edge-hi: rgba(255, 255, 255, 0.95);
+    --glass-shadow: 0 16px 40px -12px rgba(30, 41, 59, 0.20);
+    --glass-inset: inset 0 1px 0 0 var(--glass-edge-hi);
+    --radius-sm: 10px;
+    --radius-card: 18px;
+    --radius-modal: 28px;
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+    --space-5: 24px; --space-6: 32px; --space-7: 48px;
+
+    /* — typography.css — */
+    --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+    --fs-display-xl: 3.815rem; --lh-display-xl: 1.02; --ls-display-xl: -0.03em;
+    --fs-display-l: 3.052rem;  --lh-display-l: 1.06;  --ls-display-l: -0.025em;
+    --fs-heading-1: 2.441rem; --lh-heading-1: 1.15; --ls-heading-1: -0.02em;
+    --fs-heading-2: 1.953rem; --lh-heading-2: 1.2;  --ls-heading-2: -0.015em;
+    --fs-heading-3: 1.563rem; --lh-heading-3: 1.3;  --ls-heading-3: -0.01em;
+    --fs-body-l: 1.25rem; --lh-body-l: 1.55;
+    --fs-body: 1rem;      --lh-body: 1.6;
+    --fs-body-s: 0.875rem; --lh-body-s: 1.55;
+    --fs-label: 0.75rem;  --lh-label: 1.4; --ls-label: 0.14em;
+    --fs-metric: 2.441rem; --lh-metric: 1.1; --ls-metric: -0.02em;
+
+    /* — motion.css — */
+    --motion-fast: 120ms cubic-bezier(.4, 0, .2, 1);
+    --motion-base: 220ms cubic-bezier(.32, .72, 0, 1);
+    --motion-slow: 420ms cubic-bezier(.16, 1, .3, 1);
+    --motion-ambient: 48s linear infinite;
+}
+
+/* Jembatan ke utility Tailwind (text-frost, text-mist, dst.) */
+@theme {
+    --font-sans: var(--font-body);
+    --color-frost: var(--c-frost);
+    --color-mist: var(--c-mist);
+    --color-slate: var(--c-slate);
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--c-void);
+    color: var(--c-frost);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
+
+@layer components {
+    /* — glass.css (kelas) — */
+    .glass-sm { background: var(--glass-1); backdrop-filter: blur(8px) saturate(150%); -webkit-backdrop-filter: blur(8px) saturate(150%); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow), var(--glass-inset); }
+    .glass-md { background: var(--glass-2); backdrop-filter: blur(16px) saturate(150%); -webkit-backdrop-filter: blur(16px) saturate(150%); border: 1px solid var(--glass-edge); border-radius: var(--radius-card); box-shadow: var(--glass-shadow), var(--glass-inset); }
+    .glass-lg { background: var(--glass-3); backdrop-filter: blur(28px) saturate(150%); -webkit-backdrop-filter: blur(28px) saturate(150%); border: 1px solid var(--glass-edge); border-radius: var(--radius-modal); box-shadow: var(--glass-shadow), var(--glass-inset); }
+    .glass--rim { position: relative; }
+    .glass--rim::before {
+        content: "";
+        position: absolute; inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(14,160,131,0) 0%, rgba(14,160,131,0.6) 22%, rgba(255,255,255,0.5) 50%, rgba(47,95,224,0.6) 78%, rgba(47,95,224,0) 100%);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        opacity: 0.6;
+        transition: opacity var(--motion-base);
+    }
+    .glass--rim:hover::before, .glass--rim:focus-within::before { opacity: 1; }
+
+    .aurora {
+        position: fixed; inset: 0; z-index: -2;
+        background:
+            radial-gradient(46rem 46rem at 12% 8%, rgba(14,160,131,0.34), transparent 62%),
+            radial-gradient(52rem 52rem at 88% 22%, rgba(47,95,224,0.28), transparent 60%),
+            radial-gradient(38rem 38rem at 62% 96%, rgba(123,79,209,0.22), transparent 64%),
+            var(--c-void);
+    }
+    .grain {
+        position: fixed; inset: 0; z-index: -1;
+        pointer-events: none; opacity: 0.035;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    @media (prefers-reduced-transparency: reduce) {
+        .glass-sm, .glass-md, .glass-lg, .glass--rim { background: var(--c-basalt); backdrop-filter: none; }
+        .aurora { display: none; }
+    }
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+        .glass-sm, .glass-md, .glass-lg { background: rgba(255, 255, 255, 0.92); }
+    }
+
+    /* lightningcss memangkas properti backdrop-filter standar jadi hanya
+       -webkit-, yang tidak dikenali sebagian Chromium. @supports memaksa
+       versi standarnya ikut terbit di CSS hasil build. */
+    @supports (backdrop-filter: blur(1px)) {
+        .glass-sm { backdrop-filter: blur(8px) saturate(150%); }
+        .glass-md { backdrop-filter: blur(16px) saturate(150%); }
+        .glass-lg { backdrop-filter: blur(28px) saturate(150%); }
+        .btn--secondary { backdrop-filter: blur(8px) saturate(150%); }
+        .tag { backdrop-filter: blur(8px) saturate(150%); }
+        .rack { backdrop-filter: blur(4px) saturate(150%); }
+    }
+
+    /* Kaca yang hover-nya mengangkat kartu (dipakai pada card interaktif) */
+    .glass-hover { transition: transform var(--motion-base), box-shadow var(--motion-base), border-color var(--motion-base); }
+    .glass-hover:hover { transform: translateY(-4px); border-color: var(--glass-edge-hi); }
+    @media (prefers-reduced-motion: reduce) { .glass-hover:hover { transform: none; } }
+
+    /* Permukaan solid (surface-content) — panel pratinjau non-glass */
+    .panel { background: var(--c-abyss); border: 1px solid var(--glass-edge); border-radius: var(--radius-modal); }
+
+    /* — Tipografi — */
+    .eyebrow, .footnote {
+        font-family: var(--font-mono);
+        font-size: var(--fs-label); line-height: var(--lh-label); letter-spacing: var(--ls-label);
+        text-transform: uppercase;
+    }
+    .eyebrow { color: var(--c-mist); }
+    .footnote { color: var(--c-slate); letter-spacing: 0.08em; }
+
+    .t-h1, .t-h2, .t-h3, .t-cta, .t-quote { font-family: var(--font-display); color: var(--c-frost); margin: 0; text-wrap: pretty; }
+    .t-h1   { font-weight: 700; font-size: var(--fs-display-xl); line-height: var(--lh-display-xl); letter-spacing: var(--ls-display-xl); }
+    .t-cta  { font-weight: 700; font-size: var(--fs-display-l);  line-height: var(--lh-display-l);  letter-spacing: var(--ls-display-l); }
+    .t-h2   { font-weight: 600; font-size: var(--fs-heading-1);  line-height: var(--lh-heading-1);  letter-spacing: var(--ls-heading-1); }
+    .t-quote{ font-weight: 500; font-size: var(--fs-heading-2);  line-height: var(--lh-heading-2);  letter-spacing: var(--ls-heading-2); }
+    .t-h3   { font-weight: 600; font-size: var(--fs-heading-3);  line-height: var(--lh-heading-3);  letter-spacing: var(--ls-heading-3); }
+    .t-lead { font-size: var(--fs-body-l); line-height: var(--lh-body-l); color: var(--c-mist); margin: 0; text-wrap: pretty; }
+    .t-body { font-size: var(--fs-body);   line-height: var(--lh-body);   color: var(--c-mist); margin: 0; }
+
+    /* — Button — variant primary pakai warna sinyal citron, sekali per layar/aksi — */
+    .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        height: 44px; padding: 0 22px; border-radius: var(--radius-sm);
+        font-family: var(--font-body); font-size: var(--fs-body-s); font-weight: 600;
+        text-decoration: none; white-space: nowrap; cursor: pointer; border: 1px solid transparent;
+        transition: transform var(--motion-fast), box-shadow var(--motion-fast), background-color var(--motion-fast);
+    }
+    .btn:hover { transform: translateY(-1px); }
+    @media (prefers-reduced-motion: reduce) { .btn:hover { transform: none; } }
+    .btn--sm { height: 34px; padding: 0 14px; font-size: 0.8125rem; border-radius: var(--radius-sm); }
+    .btn--lg { height: 48px; padding: 0 26px; font-size: var(--fs-body); }
+
+    .btn--primary { background: var(--c-citron); color: var(--c-citron-ink); box-shadow: 0 6px 18px -8px rgba(216, 232, 92, 0.55); }
+    .btn--primary:hover { filter: brightness(1.04); }
+
+    .btn--secondary { background: var(--glass-1); color: var(--c-frost); border-color: var(--glass-edge); backdrop-filter: blur(8px) saturate(150%); -webkit-backdrop-filter: blur(8px) saturate(150%); }
+    .btn--secondary:hover { background: var(--glass-2); }
+
+    .btn--tertiary { background: transparent; color: var(--c-mist); }
+    .btn--tertiary:hover { color: var(--c-frost); }
+
+    .btn--destructive { background: var(--c-risk); color: #fff; }
+    .btn--destructive:hover { filter: brightness(1.06); }
+    .btn--full { width: 100%; }
+
+    /* — Form (Input, Checkbox) — kartu login/register: input solid, bukan kaca — */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field__label { font-size: var(--fs-body-s); font-weight: 600; color: var(--c-frost); }
+    .field__input {
+        height: 44px; padding: 0 14px; border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-edge); background: var(--c-void);
+        font-family: var(--font-body); font-size: var(--fs-body-s); color: var(--c-frost);
+        transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+    }
+    .field__input::placeholder { color: var(--c-slate); }
+    .field__input:focus { outline: none; border-color: var(--c-cobalt); box-shadow: 0 0 0 3px color-mix(in oklab, var(--c-cobalt) 20%, transparent); }
+
+    .check-row { display: flex; align-items: center; gap: 8px; font-size: var(--fs-body-s); color: var(--c-mist); }
+    .check-row input[type='checkbox'] { width: 16px; height: 16px; accent-color: var(--c-cobalt); }
+
+    .field__select {
+        height: 44px; padding: 0 12px; border-radius: var(--radius-sm);
+        border: 1px solid var(--glass-edge); background: var(--c-void);
+        font-family: var(--font-body); font-size: var(--fs-body-s); color: var(--c-frost);
+    }
+    .field__select:focus { outline: none; border-color: var(--c-cobalt); box-shadow: 0 0 0 3px color-mix(in oklab, var(--c-cobalt) 20%, transparent); }
+
+    /* — Tab navigasi atas (dashboard) — */
+    .navtab {
+        border-radius: 8px; padding: 5px 10px;
+        font-family: var(--font-body); font-size: 13px; line-height: 1.4;
+        text-decoration: none; border: 1px solid transparent;
+        color: var(--c-mist); background: transparent;
+        transition: color var(--motion-fast);
+    }
+    .navtab:hover { color: var(--c-frost); }
+    .navtab[aria-current='page'] {
+        background: var(--glass-3); border-color: var(--glass-edge);
+        font-weight: 600; color: var(--c-frost);
+    }
+
+    /* — Bubble chat asisten AI — */
+    .chat-log { display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; }
+
+    .bubble {
+        max-width: min(52ch, 88%);
+        padding: 10px 13px;
+        font-size: var(--fs-body-s);
+        line-height: 1.55;
+        animation: bubble-in var(--motion-base) both;
+    }
+    .bubble--ai {
+        align-self: flex-start;
+        border-radius: 14px 14px 14px 4px;
+        background: var(--glass-2);
+        border: 1px solid var(--glass-edge);
+        color: var(--c-frost);
+    }
+    .bubble--user {
+        align-self: flex-end;
+        border-radius: 14px 14px 4px 14px;
+        background: var(--c-citron);
+        color: var(--c-citron-ink);
+        font-weight: 500;
+    }
+    .bubble--error {
+        align-self: flex-start;
+        border-radius: 14px 14px 14px 4px;
+        background: color-mix(in oklab, var(--c-risk) 12%, transparent);
+        border: 1px solid color-mix(in oklab, var(--c-risk) 30%, transparent);
+        color: color-mix(in oklab, var(--c-risk) 65%, black);
+    }
+
+    @keyframes bubble-in {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    /* Avatar bulat citron seperti pada template DS */
+    .chat-avatar {
+        width: 26px; height: 26px; flex-shrink: 0;
+        border-radius: 50%;
+        background: var(--c-citron); color: var(--c-citron-ink);
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    }
+
+    /* Tiga titik memantul selagi AI memproses */
+    .thinking { display: flex; align-items: center; gap: 8px; }
+    .thinking__dots { display: inline-flex; gap: 4px; }
+    .thinking__dots span {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--c-cobalt);
+        animation: dot-bounce 1.1s infinite ease-in-out;
+    }
+    .thinking__dots span:nth-child(2) { animation-delay: .15s; }
+    .thinking__dots span:nth-child(3) { animation-delay: .3s; }
+    .thinking__label { animation: label-pulse 1.6s infinite ease-in-out; }
+
+    @keyframes dot-bounce {
+        0%, 80%, 100% { transform: translateY(0); opacity: .45; }
+        40% { transform: translateY(-4px); opacity: 1; }
+    }
+    @keyframes label-pulse {
+        0%, 100% { opacity: .65; }
+        50% { opacity: 1; }
+    }
+
+    /* Garis progres tipis di tepi atas panel selagi memproses */
+    .chat-progress { height: 2px; border-radius: 999px; overflow: hidden; background: var(--c-basalt); }
+    .chat-progress__bar {
+        height: 100%; width: 35%;
+        background: linear-gradient(90deg, var(--c-jade), var(--c-cobalt), var(--c-orchid));
+        animation: progress-slide 1.4s infinite ease-in-out;
+    }
+    @keyframes progress-slide {
+        0% { margin-left: -35%; }
+        100% { margin-left: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .bubble { animation: none; }
+        .thinking__dots span, .thinking__label, .chat-progress__bar { animation: none; }
+        .chat-progress__bar { width: 100%; margin-left: 0; }
+    }
+
+    /* — Bar kapasitas — */
+    .meter { height: 6px; border-radius: 999px; background: var(--c-basalt); overflow: hidden; }
+    .meter__fill { height: 100%; background: var(--c-jade); }
+    .meter__fill--warn { background: var(--c-warn); }
+    .meter__fill--risk { background: var(--c-risk); }
+
+    /* — Notifikasi ringkas — */
+    .notice {
+        border-radius: var(--radius-sm); padding: 12px 14px;
+        font-size: var(--fs-body-s); line-height: 1.55;
+        border: 1px solid var(--glass-edge);
+    }
+    .notice--ok { background: color-mix(in oklab, var(--c-ok) 12%, transparent); color: color-mix(in oklab, var(--c-ok) 65%, black); }
+    .notice--risk { background: color-mix(in oklab, var(--c-risk) 12%, transparent); color: color-mix(in oklab, var(--c-risk) 65%, black); }
+    .notice--warn { background: color-mix(in oklab, var(--c-warn) 12%, transparent); color: color-mix(in oklab, var(--c-warn) 65%, black); }
+
+    /* — Badge / Tag — */
+    .badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        height: 20px; padding: 0 8px; border-radius: 999px;
+        font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    /* Teks dipekatkan 35% (color-mix ke hitam) — token warna asli terlalu terang
+       untuk lolos kontras AA di atas latar tint 14%-nya sendiri. */
+    .badge--ok   { background: color-mix(in oklab, var(--c-ok) 14%, transparent);   color: color-mix(in oklab, var(--c-ok) 65%, black); }
+    .badge--warn { background: color-mix(in oklab, var(--c-warn) 14%, transparent); color: color-mix(in oklab, var(--c-warn) 65%, black); }
+    .badge--risk { background: color-mix(in oklab, var(--c-risk) 14%, transparent); color: color-mix(in oklab, var(--c-risk) 65%, black); }
+    .badge--info { background: color-mix(in oklab, var(--c-orchid) 14%, transparent); color: color-mix(in oklab, var(--c-orchid) 65%, black); }
+
+    .tag {
+        display: inline-flex; align-items: center; height: 28px; padding: 0 12px;
+        border-radius: 999px; font-size: var(--fs-body-s); color: var(--c-mist);
+        background: var(--glass-1); border: 1px solid var(--glass-edge);
+        backdrop-filter: blur(8px) saturate(150%); -webkit-backdrop-filter: blur(8px) saturate(150%);
+    }
+
+    /* — MetricCard (angka pakai mono, per type-mono.html) — */
+    .metric { display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: var(--radius-card); background: var(--c-void); border: 1px solid color-mix(in oklab, var(--c-frost) 8%, transparent); }
+    .metric__label { font-family: var(--font-mono); font-size: var(--fs-label); letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--c-slate); }
+    .metric__value { font-family: var(--font-mono); font-weight: 500; font-size: var(--fs-metric); line-height: var(--lh-metric); letter-spacing: var(--ls-metric); font-variant-numeric: tabular-nums; color: var(--c-frost); }
+    .metric__delta { font-size: var(--fs-body-s); }
+    .metric__delta--up { color: var(--c-ok); }
+    .metric__delta--down { color: var(--c-risk); }
+
+    /* — Kisi lantai gudang & rak (denah 2D) — */
+    .grid-floor {
+        background-image:
+            linear-gradient(to right, color-mix(in oklab, var(--c-frost) 7%, transparent) 1px, transparent 1px),
+            linear-gradient(to bottom, color-mix(in oklab, var(--c-frost) 7%, transparent) 1px, transparent 1px);
+        background-size: 44px 44px;
+    }
+    .rack {
+        border: 1px solid var(--glass-edge); border-radius: var(--radius-sm);
+        backdrop-filter: blur(4px) saturate(150%); -webkit-backdrop-filter: blur(4px) saturate(150%);
+        transition: border-color var(--motion-base), transform var(--motion-base);
+    }
+    .rack:hover { border-color: var(--glass-edge-hi); transform: translateY(-2px); }
+    .rack[aria-pressed='true'] { outline: 2px solid var(--c-cobalt); outline-offset: 1px; }
+    @media (prefers-reduced-motion: reduce) { .rack:hover { transform: none; } }
+}
+
+/* Skala tipografi mengecil di layar sempit */
+@media (max-width: 720px) {
+    :root {
+        --fs-display-xl: 2.441rem;
+        --fs-display-l: 2.1rem;
+        --fs-heading-1: 1.75rem;
+        --fs-heading-2: 1.45rem;
+        --fs-heading-3: 1.25rem;
+        --fs-body-l: 1.0625rem;
+    }
+}
