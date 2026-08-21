@@ -11,12 +11,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['company_id', 'name', 'email', 'password'])]
+#[Fillable(['company_id', 'name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    public function isAdmin(): bool
+    {
+        return in_array($this->role, ['admin', 'supervisor'], true);
+    }
 
     public function company(): BelongsTo
     {

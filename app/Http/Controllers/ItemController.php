@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Rack;
+use App\Models\PlacementPlan;
 use App\Services\GeminiService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class ItemController extends Controller
         return back()->with('status', 'Barang dihapus.');
     }
 
-    /** Minta AI menempatkan seluruh barang ke rak yang tersedia. */
+    /** Buat rencana penempatan untuk ditinjau sebelum diterapkan. */
     public function spot(Request $request, GeminiService $gemini): RedirectResponse
     {
         $company = $request->user()->company;
@@ -78,31 +79,45 @@ class ItemController extends Controller
             return back()->withErrors(['ai' => $e->getMessage()]);
         }
 
-        // Kode rak bisa berulang antar gudang, jadi cocokkan pada kemunculan pertama.
-        $rackByCode = $racks->keyBy('code');
-        $itemBySku = $items->keyBy('sku');
-        $placed = 0;
+        $allowed = $racks->mapWithKeys(fn (Rack $rack) => [$rack->warehouse->code.'|'.$rack->code => $rack->id]);
+        $placements = collect($plan['placements'])->map(function (array $placement) use ($allowed) {
+            $key = ($placement['warehouse_code'] ?? '').'|'.($placement['rack_code'] ?? '');
+            return [
+                'sku' => $placement['sku'] ?? null,
+                'warehouse_code' => $placement['warehouse_code'] ?? null,
+                'rack_code' => $placement['rack_code'] ?? null,
+                'rack_id' => $allowed->get($key),
+                'reason' => $placement['reason'] ?? null,
+            ];
+        })->filter(fn (array $placement) => filled($placement['sku']) && $placement['rack_id'])->values()->all();
 
-        foreach ($plan['placements'] as $p) {
-            $item = $itemBySku->get($p['sku'] ?? null);
-            $rack = $rackByCode->get($p['rack_code'] ?? null);
+        $planRecord = PlacementPlan::create([
+            'company_id' => $company->id,
+            'user_id' => $request->user()->id,
+            'payload' => ['placements' => $placements],
+        ]);
 
-            if (! $item || ! $rack) {
-                continue;
-            }
+        return back()->with('status', "Rencana AI #{$planRecord->id} siap ditinjau sebelum diterapkan.");
+    }
 
-            $item->update([
-                'rack_id' => $rack->id,
-                'placement_reason' => $p['reason'] ?? null,
-            ]);
+    public function applyPlan(Request $request, PlacementPlan $placementPlan): RedirectResponse
+    {
+        abort_unless($placementPlan->company_id === $request->user()->company_id && $placementPlan->status === 'pending', 403);
+        $items = Item::where('company_id', $placementPlan->company_id)->get()->keyBy('sku');
+        $racks = Rack::whereHas('warehouse', fn ($q) => $q->where('company_id', $placementPlan->company_id))->with('warehouse')->get()->keyBy('id');
+        $used = $racks->mapWithKeys(fn (Rack $rack) => [$rack->id => $rack->usedCapacity()]);
+        $applied = 0;
 
-            $placed++;
+        foreach ($placementPlan->payload['placements'] ?? [] as $placement) {
+            $item = $items->get($placement['sku'] ?? null);
+            $rack = $racks->get($placement['rack_id'] ?? null);
+            if (!$item || !$rack || $used[$rack->id] + $item->quantity > $rack->capacity) continue;
+            $item->update(['rack_id' => $rack->id, 'placement_reason' => $placement['reason'] ?? null]);
+            $used[$rack->id] += $item->quantity;
+            $applied++;
         }
 
-        $skipped = $items->count() - $placed;
-
-        return back()->with('status', $skipped === 0
-            ? "AI menempatkan {$placed} barang ke rak."
-            : "AI menempatkan {$placed} barang; {$skipped} barang dilewati karena rak usulan tidak dikenali.");
+        $placementPlan->update(['status' => 'applied', 'applied_at' => now()]);
+        return back()->with('status', "{$applied} penempatan dari rencana AI diterapkan.");
     }
 }

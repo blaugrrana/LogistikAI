@@ -222,7 +222,7 @@ class GeminiService
      *
      * @param  list<array{sku:string,name:string,category:string,quantity:int,movement:string}>  $items
      * @param  list<array{code:string,warehouse:string,zone:?string,category:?string,capacity:int,terpakai:int}>  $racks
-     * @return array{placements: list<array{sku:string,rack_code:string,reason:string}>}
+    * @return array{placements: list<array{sku:string,warehouse_code:string,rack_code:string,reason:string}>}
      */
     public function planPlacements(array $items, array $racks): array
     {
@@ -243,11 +243,11 @@ class GeminiService
         2. Barang dengan movement "fast" diletakkan di rak zone "Fast Moving" (dekat dok pengiriman).
         3. Jangan melebihi kapasitas rak: terpakai + quantity <= capacity. Jika rak yang cocok penuh,
            pilih rak lain yang masih longgar.
-        4. rack_code WAJIB salah satu kode rak dari daftar di atas.
+        4. warehouse_code dan rack_code WAJIB diambil dari kombinasi yang sama pada daftar di atas.
         5. reason ditulis singkat dalam bahasa Indonesia, maksimal 15 kata.
 
         Balas HANYA JSON dengan bentuk:
-        {"placements":[{"sku":"...","rack_code":"...","reason":"..."}]}
+        {"placements":[{"sku":"...","warehouse_code":"GD-A","rack_code":"A1","reason":"..."}]}
         Sertakan seluruh SKU dari daftar barang.
         TXT;
 

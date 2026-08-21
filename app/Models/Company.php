@@ -25,6 +25,21 @@ class Company extends Model
         return $this->hasMany(Item::class);
     }
 
+    public function batches(): HasMany
+    {
+        return $this->hasMany(Batch::class);
+    }
+
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function stocktakes(): HasMany
+    {
+        return $this->hasMany(Stocktake::class);
+    }
+
     /**
      * Cari perusahaan dengan nama setara, atau buat baru.
      * Nama dinormalkan jadi slug supaya "PT Maju Jaya" dan "pt maju jaya"

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Warehouse;
+use App\Models\PlacementPlan;
+use App\Models\Stocktake;
 use App\Services\GeminiService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -37,6 +39,10 @@ class DashboardController extends Controller
             'totalCapacity' => $racks->sum('capacity'),
             'usedCapacity' => $items->whereNotNull('rack_id')->sum('quantity'),
             'aiReady' => $gemini->isConfigured(),
+            'pendingPlans' => PlacementPlan::where('company_id', $company->id)->where('status', 'pending')->latest()->get(),
+            'lowStockItems' => $items->filter(fn (Item $item) => $item->reorder_point > 0 && $item->quantity <= $item->reorder_point)->values(),
+            'expiringItems' => $items->filter(fn (Item $item) => $item->expires_at && $item->expires_at->lte(now()->addDays(30)))->values(),
+            'openStocktake' => Stocktake::where('company_id', $company->id)->where('status', 'open')->with('lines.item')->latest()->first(),
         ]);
     }
 }

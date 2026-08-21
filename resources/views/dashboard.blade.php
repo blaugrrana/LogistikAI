@@ -73,6 +73,13 @@
             </div>
         @endunless
 
+        @if ($tab === 'barang' && ($lowStockItems->isNotEmpty() || $expiringItems->isNotEmpty()))
+            <div class="notice notice--warn">
+                @if ($lowStockItems->isNotEmpty()) {{ $lowStockItems->count() }} SKU di bawah stok minimum. @endif
+                @if ($expiringItems->isNotEmpty()) {{ $expiringItems->count() }} SKU mendekati kedaluwarsa. @endif
+            </div>
+        @endif
+
         @if ($tab === 'akun')
             @include('dashboard.akun')
         @else

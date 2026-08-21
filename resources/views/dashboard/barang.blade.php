@@ -12,6 +12,61 @@
 
 @else
 
+    <div class="grid gap-4 lg:grid-cols-3">
+        <div class="glass-md flex flex-col gap-3 p-5">
+            <span class="eyebrow">Impor CSV</span>
+            <form method="POST" action="{{ route('inventory.import') }}" enctype="multipart/form-data" class="flex flex-col gap-2">
+                @csrf
+                <input type="file" name="file" accept=".csv,.txt" required class="field__input">
+                <button class="btn btn--secondary btn--full" type="submit">Impor barang</button>
+            </form>
+            <span class="footnote">Kolom: sku, name, category, quantity, movement, reorder_point</span>
+        </div>
+        <div class="glass-md flex flex-col gap-3 p-5">
+            <span class="eyebrow">Mutasi stok</span>
+            <form method="POST" action="{{ route('inventory.movement') }}" class="flex flex-col gap-2">
+                @csrf
+                <select name="item_id" required class="field__select"><option value="">Pilih SKU</option>@foreach ($items as $item)<option value="{{ $item->id }}">{{ $item->sku }} ({{ $item->quantity }})</option>@endforeach</select>
+                <div class="grid grid-cols-2 gap-2"><select name="type" class="field__select"><option value="in">Barang masuk</option><option value="out">Barang keluar</option></select><input name="quantity" type="number" min="1" required placeholder="Jumlah" class="field__input"></div>
+                <input name="batch_number" placeholder="Nomor batch (opsional)" class="field__input"><input name="expires_at" type="date" class="field__input">
+                <button class="btn btn--secondary btn--full" type="submit">Catat mutasi</button>
+            </form>
+        </div>
+        <div class="glass-md flex flex-col gap-3 p-5">
+            <span class="eyebrow">Stok opname</span>
+            <p class="t-body">Buat sesi opname untuk membandingkan stok fisik dengan saldo sistem.</p>
+            <form method="POST" action="{{ route('stocktakes.start') }}">@csrf<button class="btn btn--secondary btn--full" type="submit">Mulai stok opname</button></form>
+        </div>
+    </div>
+
+    @if ($pendingPlans->isNotEmpty())
+        <div class="glass-md flex flex-col gap-3 p-5">
+            <div class="flex items-center justify-between"><span class="eyebrow">Rencana AI menunggu persetujuan</span><span class="badge badge--warn">{{ $pendingPlans->count() }} pending</span></div>
+            @foreach ($pendingPlans as $plan)
+                <div class="flex items-center justify-between gap-3 border-t pt-3" style="border-color: var(--glass-edge)">
+                    <span class="t-body">Rencana #{{ $plan->id }} · {{ count($plan->payload['placements'] ?? []) }} usulan · {{ $plan->created_at->format('d/m/Y H:i') }}</span>
+                    <form method="POST" action="{{ route('items.spot.apply', $plan) }}">@csrf<button class="btn btn--primary btn--sm" type="submit">Terapkan</button></form>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
+    @if ($openStocktake)
+        <div class="glass-md flex flex-col gap-3 p-5">
+            <div class="flex items-center justify-between"><span class="eyebrow">Stok opname #{{ $openStocktake->id }}</span><span class="badge badge--warn">Belum selesai</span></div>
+            <form method="POST" action="{{ route('stocktakes.complete', $openStocktake) }}" class="flex flex-col gap-2">
+                @csrf @method('PUT')
+                @foreach ($openStocktake->lines as $line)
+                    <label class="flex items-center justify-between gap-3 border-t pt-2 text-[13px]" style="border-color: var(--glass-edge)">
+                        <span>{{ $line->item->sku }} <span class="text-slate">(sistem {{ $line->system_quantity }})</span></span>
+                        <input name="physical[{{ $line->id }}]" type="number" min="0" required value="{{ $line->physical_quantity ?? $line->system_quantity }}" class="field__input max-w-[120px]">
+                    </label>
+                @endforeach
+                <button class="btn btn--primary btn--full" type="submit">Selesaikan opname</button>
+            </form>
+        </div>
+    @endif
+
     {{-- Ringkasan kapasitas --}}
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div class="metric">

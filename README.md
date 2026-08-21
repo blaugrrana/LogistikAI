@@ -73,6 +73,13 @@ php artisan serve
 - Setelah struktur ada, chat yang sama dipakai untuk mengubahnya: tambah rak, tambah gudang, hapus rak/gudang — cukup minta lewat obrolan.
 - Tambah barang manual (SKU, kategori, jumlah, frekuensi gerak, kedaluwarsa).
 - Tombol **Jalankan spotting AI** — AI menempatkan tiap barang ke rak yang paling cocok, dengan alasan singkat per penempatan.
+- Hasil spotting AI disimpan sebagai **rencana pending** dan harus ditinjau sebelum diterapkan.
+- Peringatan stok minimum dan barang mendekati kedaluwarsa.
+- Mutasi stok masuk/keluar, nomor batch, dan transfer antar rak dengan validasi kapasitas.
+- Impor barang melalui CSV (`sku,name,category,quantity,movement,reorder_point`).
+- Stok opname dengan perbandingan saldo sistem dan stok fisik.
+- Role akun: pendaftar pertama menjadi `admin`, akun berikutnya menjadi `operator`.
+- Riwayat audit mutasi menyimpan petugas, waktu, batch, referensi, dan rak asal/tujuan.
 
 **Pengaturan Akun**
 - Ubah profil & kata sandi, lihat jumlah akun terhubung se-perusahaan, hapus akun (data perusahaan tetap ada untuk akun lain).
@@ -88,3 +95,18 @@ php artisan migrate:fresh
 ```
 
 Menghapus seluruh data (perusahaan, akun, gudang, barang) dan menjalankan ulang semua migrasi dari nol.
+
+## Migrasi fitur operasional
+
+Setelah mengambil perubahan terbaru, jalankan:
+
+```bash
+php artisan migrate
+```
+
+Contoh header CSV untuk impor barang:
+
+```csv
+sku,name,category,quantity,movement,reorder_point
+SKU-10482,Kopi Susu 220ml,Minuman,400,fast,100
+```

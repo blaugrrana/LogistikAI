@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\WarehouseSetupController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/barang', [ItemController::class, 'store'])->name('items.store');
     Route::delete('/barang/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
     Route::post('/barang/spotting', [ItemController::class, 'spot'])->name('items.spot');
+    Route::post('/barang/spotting/{placementPlan}/terapkan', [ItemController::class, 'applyPlan'])->name('items.spot.apply');
+    Route::post('/barang/mutasi', [InventoryController::class, 'movement'])->name('inventory.movement');
+    Route::post('/barang/transfer', [InventoryController::class, 'transfer'])->name('inventory.transfer');
+    Route::post('/barang/import', [InventoryController::class, 'import'])->name('inventory.import');
+    Route::post('/stok-opname', [InventoryController::class, 'startStocktake'])->name('stocktakes.start');
+    Route::put('/stok-opname/{stocktake}', [InventoryController::class, 'completeStocktake'])->name('stocktakes.complete');
 
     // Pengaturan akun
     Route::put('/akun/profil', [AccountController::class, 'updateProfile'])->name('account.profile');

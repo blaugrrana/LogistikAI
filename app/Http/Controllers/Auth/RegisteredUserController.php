@@ -25,12 +25,14 @@ class RegisteredUserController extends Controller
 
         // Nama perusahaan yang sama menautkan akun ini ke ruang kerja yang sudah ada.
         $company = Company::findOrCreateByName($validated['company']);
+        $role = $company->users()->exists() ? 'operator' : 'admin';
 
         $user = User::create([
             'company_id' => $company->id,
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role' => $role,
         ]);
 
         event(new Registered($user));
